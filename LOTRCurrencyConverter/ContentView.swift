@@ -12,6 +12,11 @@ struct ContentView: View {
     @State var leftAmount = ""
     @State var rightAmount = ""
     
+    @State var showSelectCurrency = false
+    
+    @State var leftCurrency = Currency.silverPiece
+    @State var rightCurrency: Currency = .goldPiece
+    
     var body: some View {
         ZStack {
             
@@ -40,19 +45,21 @@ struct ContentView: View {
                         
                         // Currency
                         HStack {
-                            
                             // Currency Image
-                            Image(.silverpiece)
+                            Image(leftCurrency.image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 33)
                             
                             // Currency Text
-                            Text("Silver Piece")
+                            Text(leftCurrency.name)
                                 .font(.headline)
                                 .foregroundStyle(.white)
                         }
                         .padding(.bottom, -5)
+                        .onTapGesture {
+                            showSelectCurrency.toggle()
+                        }
                         
                         // Text field
                         TextField("Amount", text: $leftAmount)
@@ -72,17 +79,20 @@ struct ContentView: View {
                         HStack {
                             
                             // Currency text
-                            Text("Gold Piece")
+                            Text(rightCurrency.name)
                                 .font(.headline)
                                 .foregroundStyle(.white)
                             
                             // Currency Image
-                            Image(.goldpiece)
+                            Image(rightCurrency.image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 33)
                         }
                         .padding(.bottom, -5)
+                        .onTapGesture {
+                            showSelectCurrency.toggle()
+                        }
                         
                         // Text field
                         TextField("Amount", text: $leftAmount)
@@ -108,10 +118,18 @@ struct ContentView: View {
                             .font(.largeTitle)
                             .foregroundStyle(.white)
                     }
+                    .padding(.trailing)
                 }
-                .padding(.trailing)
                 
             }
+            .sheet(isPresented: $showExchangeInfo) {
+                ExchangeInfo()
+            }
+            // The key thing here is that the sheet property can be anywhere in the code and still work, that means it is not the button who shows the page but the state property which do the thing anytime the state changes.
+            .sheet(isPresented: $showSelectCurrency) {
+                SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurrency)
+            }
+            
         }
     }
 }
